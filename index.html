@@ -373,6 +373,10 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // ===== СТРАНИЦА, КУДА ПЕРЕКИДЫВАТЬ ПОСЛЕ ВХОДА =====
+        const REDIRECT_URL = 'dashboard.html'; // замените на нужную страницу
+        // =====================================================
+
         // DOM-элементы
         const form = document.getElementById('loginForm');
         const emailInput = document.getElementById('email');
@@ -387,12 +391,10 @@
         }
 
         // ===== Отслеживание состояния входа =====
+        // Если пользователь уже вошёл — сразу перекидываем на dashboard
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                const name = user.displayName || user.email || 'пользователь';
-                showMessage(`Вы вошли как ${name}`, 'success');
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Выйти';
+                window.location.replace(REDIRECT_URL);
             } else {
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Войти';
@@ -402,12 +404,6 @@
         // ===== Вход / Регистрация по Email и паролю =====
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            if (auth.currentUser) {
-                await auth.signOut();
-                showMessage('Вы вышли из аккаунта.', 'success');
-                return;
-            }
 
             const email = emailInput.value.trim();
             const password = passwordInput.value;
@@ -430,13 +426,14 @@
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                passwordInput.value = '';
+                // Перенаправление выполнится в onAuthStateChanged
+                window.location.replace(REDIRECT_URL);
             } catch (err) {
+                // Если пользователя нет — регистрируем и сразу входим
                 if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
                     try {
                         await createUserWithEmailAndPassword(auth, email, password);
-                        showMessage('Аккаунт создан и выполнен вход!', 'success');
-                        passwordInput.value = '';
+                        window.location.replace(REDIRECT_URL);
                     } catch (regErr) {
                         showMessage('Ошибка регистрации: ' + regErr.message, 'error');
                         loginBtn.disabled = false;
@@ -454,9 +451,9 @@
         githubLoginBtn.addEventListener('click', async () => {
             const provider = new GithubAuthProvider();
             try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                showMessage(`Вы вошли через GitHub: ${user.displayName || user.email}`, 'success');
+                await signInWithPopup(auth, provider);
+                // Перенаправление выполнится в onAuthStateChanged
+                window.location.replace(REDIRECT_URL);
             } catch (err) {
                 if (err.code === 'auth/account-exists-with-different-credential') {
                     showMessage('Этот email уже используется другим способом входа. Войдите через email/пароль.', 'error');
