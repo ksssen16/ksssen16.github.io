@@ -391,9 +391,9 @@
         }
 
         // ===== Отслеживание состояния входа =====
-        // Если пользователь уже вошёл — сразу перекидываем на dashboard
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                // Если пользователь уже вошёл — сразу перекидываем
                 window.location.replace(REDIRECT_URL);
             } else {
                 loginBtn.disabled = false;
@@ -425,20 +425,32 @@
             loginBtn.textContent = 'Загрузка...';
 
             try {
+                // Пытаемся войти
                 await signInWithEmailAndPassword(auth, email, password);
-                // Перенаправление выполнится в onAuthStateChanged
                 window.location.replace(REDIRECT_URL);
             } catch (err) {
-                // Если пользователя нет — регистрируем и сразу входим
-                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                // Только если пользователь действительно не найден — регистрируем
+                if (err.code === 'auth/user-not-found') {
                     try {
                         await createUserWithEmailAndPassword(auth, email, password);
                         window.location.replace(REDIRECT_URL);
                     } catch (regErr) {
-                        showMessage('Ошибка регистрации: ' + regErr.message, 'error');
+                        if (regErr.code === 'auth/email-already-in-use') {
+                            showMessage('Этот email уже зарегистрирован. Возможно, вы ошиблись паролем.', 'error');
+                        } else {
+                            showMessage('Ошибка регистрации: ' + regErr.message, 'error');
+                        }
                         loginBtn.disabled = false;
                         loginBtn.textContent = 'Войти';
                     }
+                } else if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    showMessage('Неверный пароль. Проверьте раскладку и попробуйте снова.', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Войти';
+                } else if (err.code === 'auth/too-many-requests') {
+                    showMessage('Слишком много попыток. Попробуйте позже.', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Войти';
                 } else {
                     showMessage('Ошибка входа: ' + err.message, 'error');
                     loginBtn.disabled = false;
@@ -452,7 +464,6 @@
             const provider = new GithubAuthProvider();
             try {
                 await signInWithPopup(auth, provider);
-                // Перенаправление выполнится в onAuthStateChanged
                 window.location.replace(REDIRECT_URL);
             } catch (err) {
                 if (err.code === 'auth/account-exists-with-different-credential') {
