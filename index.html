@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой проект | GitHub</title>
     <style>
-        /* Общие стили */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -40,19 +35,13 @@
             box-shadow: 0 35px 60px rgba(0, 0, 0, 0.7);
         }
 
-        /* Аватар */
         .avatar {
-            width: 120px;
-            height: 120px;
+            width: 120px; height: 120px;
             border-radius: 50%;
             background: linear-gradient(135deg, #6c63ff, #3f3d9e);
             margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: bold;
-            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 48px; font-weight: bold; color: #fff;
             box-shadow: 0 0 30px rgba(108, 99, 255, 0.3);
             animation: pulse 2s ease-in-out infinite;
         }
@@ -62,11 +51,8 @@
             50% { box-shadow: 0 0 60px rgba(108, 99, 255, 0.6); }
         }
 
-        /* Заголовки */
         h1 {
-            text-align: center;
-            font-size: 28px;
-            font-weight: 700;
+            text-align: center; font-size: 28px; font-weight: 700;
             margin-bottom: 8px;
             background: linear-gradient(135deg, #ffffff, #a8a8ff);
             -webkit-background-clip: text;
@@ -74,23 +60,128 @@
         }
 
         .subtitle {
-            text-align: center;
-            color: #a8a8b3;
-            font-size: 16px;
-            margin-bottom: 25px;
-            letter-spacing: 1px;
+            text-align: center; color: #a8a8b3;
+            font-size: 16px; margin-bottom: 25px; letter-spacing: 1px;
         }
 
-        /* Описание */
         .description {
-            text-align: center;
-            color: #d0d0d8;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-size: 15px;
+            text-align: center; color: #d0d0d8;
+            line-height: 1.6; margin-bottom: 30px; font-size: 15px;
         }
 
-        /* Ссылки */
+        /* ===== Форма входа ===== */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .auth-form h2 {
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #e0e0ff;
+            margin-bottom: 4px;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .auth-form input::placeholder { color: #7a7a8c; }
+
+        .auth-form input:focus {
+            border-color: #6c63ff;
+            background: rgba(108, 99, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+        }
+
+        .auth-form button {
+            padding: 14px;
+            background: linear-gradient(135deg, #6c63ff, #3f3d9e);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(108, 99, 255, 0.3);
+        }
+
+        .auth-form button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(108, 99, 255, 0.5);
+        }
+
+        /* Кнопка "Войти через GitHub" */
+        .github-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: #e0e0e8;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .github-login-btn:hover {
+            background: rgba(108, 99, 255, 0.2);
+            border-color: #6c63ff;
+            box-shadow: 0 0 20px rgba(108, 99, 255, 0.15);
+        }
+
+        .github-login-btn .icon { font-size: 20px; }
+
+        /* Сообщения */
+        .auth-message {
+            text-align: center;
+            font-size: 14px;
+            min-height: 20px;
+            margin-top: 4px;
+        }
+        .auth-message.error { color: #ff6b6b; }
+        .auth-message.success { color: #51cf66; }
+
+        /* Разделитель */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #7a7a8c;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 4px 0;
+        }
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Остальные ссылки */
         .links {
             display: flex;
             flex-direction: column;
@@ -121,11 +212,8 @@
             box-shadow: 0 0 20px rgba(108, 99, 255, 0.1);
         }
 
-        .link-btn .icon {
-            font-size: 20px;
-        }
+        .link-btn .icon { font-size: 20px; }
 
-        /* Кнопка GitHub */
         .github-btn {
             display: block;
             width: 100%;
@@ -148,7 +236,6 @@
             box-shadow: 0 8px 30px rgba(108, 99, 255, 0.5);
         }
 
-        /* Статистика */
         .stats {
             display: flex;
             justify-content: space-around;
@@ -157,25 +244,13 @@
             border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 22px;
-            font-weight: 700;
-            color: #fff;
-        }
-
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 22px; font-weight: 700; color: #fff; }
         .stat-label {
-            font-size: 12px;
-            color: #8888a0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 4px;
+            font-size: 12px; color: #8888a0;
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;
         }
 
-        /* Лабораторные работы */
         .section-title {
             text-align: center;
             font-size: 17px;
@@ -185,90 +260,76 @@
             margin-bottom: 14px;
         }
 
-        .labs .link-btn {
-            font-size: 15px;
-        }
+        .labs .link-btn { font-size: 15px; }
 
-        /* Адаптивность */
         @media (max-width: 480px) {
-            .card {
-                padding: 30px 25px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .avatar {
-                width: 90px;
-                height: 90px;
-                font-size: 36px;
-            }
-
-            .stats {
-                flex-direction: column;
-                gap: 15px;
-            }
+            .card { padding: 30px 25px; }
+            h1 { font-size: 24px; }
+            .avatar { width: 90px; height: 90px; font-size: 36px; }
+            .stats { flex-direction: column; gap: 15px; }
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <!-- Аватар -->
         <div class="avatar">👨‍💻</div>
 
-        <!-- Заголовок -->
         <h1>Ваше Имя</h1>
         <p class="subtitle">Full-Stack Developer & Open Source Enthusiast</p>
 
-        <!-- Описание -->
         <p class="description">
             Создаю современные веб-приложения с любовью к коду.
             Увлекаюсь JavaScript, Python и облачными технологиями.
         </p>
 
-        <!-- Ссылки -->
+        <!-- ===== ФОРМА ВХОДА ===== -->
+        <form class="auth-form" id="loginForm" novalidate>
+            <h2>Вход в аккаунт</h2>
+
+            <input type="email" id="email" name="email"
+                   placeholder="Электронная почта" autocomplete="email" required>
+
+            <input type="password" id="password" name="password"
+                   placeholder="Пароль" autocomplete="current-password" required>
+
+            <button type="submit">Войти</button>
+
+            <div class="divider">или</div>
+
+            <!-- Вход через GitHub (OAuth) -->
+            <a href="https://github.com/login/oauth/authorize"
+               class="github-login-btn" id="githubLogin">
+                <span class="icon">🐙</span>
+                Войти через GitHub
+            </a>
+
+            <div class="auth-message" id="authMessage"></div>
+        </form>
+        <!-- ===== /ФОРМА ВХОДА ===== -->
+
         <div class="links">
             <a href="#" class="link-btn">
-                <span class="icon">📁</span>
-                Мои репозитории
+                <span class="icon">📁</span> Мои репозитории
             </a>
             <a href="#" class="link-btn">
-                <span class="icon">📝</span>
-                Блог / Статьи
+                <span class="icon">📝</span> Блог / Статьи
             </a>
             <a href="#" class="link-btn">
-                <span class="icon">💼</span>
-                Портфолио
+                <span class="icon">💼</span> Портфолио
             </a>
         </div>
 
-        <!-- Лабораторные работы -->
         <h2 class="section-title">Лабораторные работы</h2>
         <div class="links labs">
-            <a href="supabase.html" class="link-btn">
-                Supabase: select и insert
-            </a>
-            <a href="supabase-realtime.html" class="link-btn">
-                Supabase Realtime
-            </a>
-            <a href="firebase.html" class="link-btn">
-                Firebase: select и insert
-            </a>
-            <a href="firebase-realtime.html" class="link-btn">
-                Firebase Realtime
-            </a>
-            <a href="auth.html" class="link-btn">
-                Авторизация Google / GitHub
-            </a>
+            <a href="supabase.html" class="link-btn">Supabase: select и insert</a>
+            <a href="supabase-realtime.html" class="link-btn">Supabase Realtime</a>
+            <a href="firebase.html" class="link-btn">Firebase: select и insert</a>
+            <a href="firebase-realtime.html" class="link-btn">Firebase Realtime</a>
+            <a href="auth.html" class="link-btn">Авторизация Google / GitHub</a>
         </div>
 
-        <!-- Кнопка GitHub -->
-        <a href="#" class="github-btn">
-            ⭐ Посмотреть на GitHub
-        </a>
+        <a href="#" class="github-btn">⭐ Посмотреть на GitHub</a>
 
-        <!-- Статистика -->
         <div class="stats">
             <div class="stat-item">
                 <div class="stat-number">12</div>
@@ -284,5 +345,77 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // ===== Демонстрационная логика входа =====
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const message = document.getElementById('authMessage');
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = 'auth-message ' + (type || '');
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            // Простая валидация
+            if (!email || !password) {
+                showMessage('Пожалуйста, заполните все поля.', 'error');
+                return;
+            }
+
+            const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            if (!emailOk) {
+                showMessage('Введите корректный адрес электронной почты.', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Пароль должен содержать минимум 6 символов.', 'error');
+                return;
+            }
+
+            // === Здесь должна быть реальная авторизация ===
+            // Например, через Supabase:
+            // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            //
+            // Или через Firebase:
+            // await signInWithEmailAndPassword(auth, email, password);
+            //
+            // Сейчас — демонстрация успешного входа:
+            showMessage('Успешный вход! Добро пожаловать 👋', 'success');
+
+            // Сохраняем "сессию" в localStorage (только для демо!)
+            localStorage.setItem('demoUser', JSON.stringify({ email, loggedInAt: Date.now() }));
+
+            // Очищаем пароль
+            passwordInput.value = '';
+        });
+
+        // ===== Вход через GitHub (OAuth) =====
+        // Для реальной работы замените client_id и redirect_uri на свои
+        const GITHUB_CLIENT_ID = 'ВАШ_GITHUB_CLIENT_ID';
+        const GITHUB_REDIRECT_URI = encodeURIComponent(window.location.origin + '/auth-callback.html');
+
+        document.getElementById('githubLogin').addEventListener('click', function (e) {
+            // Раскомментируйте строки ниже, когда настроите OAuth-приложение на GitHub:
+            //
+            // e.preventDefault();
+            // const url = 'https://github.com/login/oauth/authorize'
+            //     + '?client_id=' + GITHUB_CLIENT_ID
+            //     + '&redirect_uri=' + GITHUB_REDIRECT_URI
+            //     + '&scope=read:user user:email';
+            // window.location.href = url;
+
+            // Пока OAuth не настроен — показываем подсказку:
+            showMessage('Для входа через GitHub настройте OAuth-приложение (client_id).', 'error');
+        });
+    </script>
 </body>
 </html>
