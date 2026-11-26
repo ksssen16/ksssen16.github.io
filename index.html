@@ -69,7 +69,6 @@
             line-height: 1.6; margin-bottom: 30px; font-size: 15px;
         }
 
-        /* ===== Форма входа ===== */
         .auth-form {
             display: flex;
             flex-direction: column;
@@ -125,7 +124,12 @@
             box-shadow: 0 8px 30px rgba(108, 99, 255, 0.5);
         }
 
-        /* Кнопка "Войти через GitHub" */
+        .auth-form button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .github-login-btn {
             display: flex;
             align-items: center;
@@ -152,7 +156,6 @@
 
         .github-login-btn .icon { font-size: 20px; }
 
-        /* Сообщения */
         .auth-message {
             text-align: center;
             font-size: 14px;
@@ -162,7 +165,6 @@
         .auth-message.error { color: #ff6b6b; }
         .auth-message.success { color: #51cf66; }
 
-        /* Разделитель */
         .divider {
             display: flex;
             align-items: center;
@@ -181,7 +183,6 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
-        /* Остальные ссылки */
         .links {
             display: flex;
             flex-direction: column;
@@ -292,16 +293,14 @@
             <input type="password" id="password" name="password"
                    placeholder="Пароль" autocomplete="current-password" required>
 
-            <button type="submit">Войти</button>
+            <button type="submit" id="loginBtn">Войти</button>
 
             <div class="divider">или</div>
 
-            <!-- Вход через GitHub (OAuth) -->
-            <a href="https://github.com/login/oauth/authorize"
-               class="github-login-btn" id="githubLogin">
+            <button type="button" class="github-login-btn" id="githubLoginBtn">
                 <span class="icon">🐙</span>
                 Войти через GitHub
-            </a>
+            </button>
 
             <div class="auth-message" id="authMessage"></div>
         </form>
@@ -346,75 +345,127 @@
         </div>
     </div>
 
-    <script>
-        // ===== Демонстрационная логика входа =====
+    <!-- Firebase SDK (модульный) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            GithubAuthProvider,
+            signInWithPopup,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        // ===== ВАШ КОНФИГ FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyC2cs4y0BsyMa7ThAGtPNeun3OqmVVCORI",
+            authDomain: "name-702a7.firebaseapp.com",
+            databaseURL: "https://name-702a7-default-rtdb.firebaseio.com",
+            projectId: "name-702a7",
+            storageBucket: "name-702a7.firebasestorage.app",
+            messagingSenderId: "526462092208",
+            appId: "1:526462092208:web:04c66201f898f3649d8c75",
+            measurementId: "G-9ZXYST4M3L"
+        };
+        // ================================
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // DOM-элементы
         const form = document.getElementById('loginForm');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const message = document.getElementById('authMessage');
+        const loginBtn = document.getElementById('loginBtn');
+        const githubLoginBtn = document.getElementById('githubLoginBtn');
 
         function showMessage(text, type) {
             message.textContent = text;
             message.className = 'auth-message ' + (type || '');
         }
 
-        form.addEventListener('submit', function (e) {
+        // ===== Отслеживание состояния входа =====
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const name = user.displayName || user.email || 'пользователь';
+                showMessage(`Вы вошли как ${name}`, 'success');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Выйти';
+            } else {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Войти';
+            }
+        });
+
+        // ===== Вход / Регистрация по Email и паролю =====
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            if (auth.currentUser) {
+                await auth.signOut();
+                showMessage('Вы вышли из аккаунта.', 'success');
+                return;
+            }
 
             const email = emailInput.value.trim();
             const password = passwordInput.value;
 
-            // Простая валидация
             if (!email || !password) {
-                showMessage('Пожалуйста, заполните все поля.', 'error');
+                showMessage('Заполните email и пароль.', 'error');
                 return;
             }
-
-            const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-            if (!emailOk) {
-                showMessage('Введите корректный адрес электронной почты.', 'error');
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showMessage('Введите корректный email.', 'error');
                 return;
             }
-
             if (password.length < 6) {
-                showMessage('Пароль должен содержать минимум 6 символов.', 'error');
+                showMessage('Пароль должен быть не менее 6 символов.', 'error');
                 return;
             }
 
-            // === Здесь должна быть реальная авторизация ===
-            // Например, через Supabase:
-            // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            //
-            // Или через Firebase:
-            // await signInWithEmailAndPassword(auth, email, password);
-            //
-            // Сейчас — демонстрация успешного входа:
-            showMessage('Успешный вход! Добро пожаловать 👋', 'success');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Загрузка...';
 
-            // Сохраняем "сессию" в localStorage (только для демо!)
-            localStorage.setItem('demoUser', JSON.stringify({ email, loggedInAt: Date.now() }));
-
-            // Очищаем пароль
-            passwordInput.value = '';
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                passwordInput.value = '';
+            } catch (err) {
+                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                    try {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        showMessage('Аккаунт создан и выполнен вход!', 'success');
+                        passwordInput.value = '';
+                    } catch (regErr) {
+                        showMessage('Ошибка регистрации: ' + regErr.message, 'error');
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Войти';
+                    }
+                } else {
+                    showMessage('Ошибка входа: ' + err.message, 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Войти';
+                }
+            }
         });
 
-        // ===== Вход через GitHub (OAuth) =====
-        // Для реальной работы замените client_id и redirect_uri на свои
-        const GITHUB_CLIENT_ID = 'ВАШ_GITHUB_CLIENT_ID';
-        const GITHUB_REDIRECT_URI = encodeURIComponent(window.location.origin + '/auth-callback.html');
-
-        document.getElementById('githubLogin').addEventListener('click', function (e) {
-            // Раскомментируйте строки ниже, когда настроите OAuth-приложение на GitHub:
-            //
-            // e.preventDefault();
-            // const url = 'https://github.com/login/oauth/authorize'
-            //     + '?client_id=' + GITHUB_CLIENT_ID
-            //     + '&redirect_uri=' + GITHUB_REDIRECT_URI
-            //     + '&scope=read:user user:email';
-            // window.location.href = url;
-
-            // Пока OAuth не настроен — показываем подсказку:
-            showMessage('Для входа через GitHub настройте OAuth-приложение (client_id).', 'error');
+        // ===== Вход через GitHub =====
+        githubLoginBtn.addEventListener('click', async () => {
+            const provider = new GithubAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                showMessage(`Вы вошли через GitHub: ${user.displayName || user.email}`, 'success');
+            } catch (err) {
+                if (err.code === 'auth/account-exists-with-different-credential') {
+                    showMessage('Этот email уже используется другим способом входа. Войдите через email/пароль.', 'error');
+                } else if (err.code === 'auth/popup-closed-by-user') {
+                    showMessage('Окно входа было закрыто.', 'error');
+                } else {
+                    showMessage('Ошибка GitHub-входа: ' + err.message, 'error');
+                }
+            }
         });
     </script>
 </body>
